@@ -122,7 +122,7 @@ while [ $VALID_KEY -eq 0 ]; do
 done
 
 # Schrijf de nieuwe config met uitgebreide instellingen
-cat > "$CONFIG_FILE" <<EOL
+cat > "$CONFIG_FILE" <<EOF
 # -----------------------------------------------------------------------------
 # SAFETY CONFIGURATION
 # Use 'whitelist_patterns' to match the internal key seen in /config
@@ -215,7 +215,7 @@ prompts:
       3. Do not use markdown formatting like **bold** or `code blocks`.
     chat_assistant: "You are a technical terminal expert. When asked for explanations, be concise and direct. Do not use conversational filler like 'Hi' or 'Sure'. specificy tools or flags clearly."
     chat_assistant_prepared: "You are an intelligent CLI assistant. The user prompt contains context: 'user@host:cwd[exit_code]'. Use this to detect errors. If the last exit code was non-zero, prioritize debugging."
-EOL
+EOF
 
 echo -e "${GREEN}✓ Nieuwe configuratie geschreven naar $CONFIG_FILE${NC}"
 
