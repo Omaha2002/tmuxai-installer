@@ -67,17 +67,39 @@ fi
 
 echo ""
 echo -e "${BLUE}Configuratie instellen voor Mistral Devstral.${NC}"
+echo -e "${YELLOW}Je hebt een Mistral API key nodig van: https://console.mistral.ai/${NC}"
+echo ""
 
 # API Key input loop - blijft vragen tot geldige key of Ctrl-C
 API_KEY=""
 VALID_KEY=0
 
 while [ $VALID_KEY -eq 0 ]; do
-    echo -n "Voer je Mistral API Key in (of druk Ctrl-C om te annuleren): "
-    read -r API_KEY
+    printf "Voer je Mistral API Key in (of druk Ctrl-C om te annuleren): "
+    
+    # Ensure prompt is displayed and flush output
+    if command -v stty >/dev/null 2>&1; then
+        stty echo # Ensure echo is enabled
+    fi
+    
+    # Cross-platform input handling
+    if [ -n "$BASH_VERSION" ]; then
+        read -r API_KEY
+    else
+        read API_KEY
+    fi
 
-    if [ -z "$API_KEY" ]; then
+    # Trim whitespace and check if empty
+    API_KEY=$(echo "$API_KEY" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    
+    # Debug: Show what we received (first few chars only for security)
+    if [ ${#API_KEY} -gt 0 ]; then
+        echo -e "${YELLOW}Ontvangen: ${#API_KEY} karakters${NC}"
+    fi
+    
+    if [ -z "$API_KEY" ] || [ "$API_KEY" = "" ]; then
         echo -e "${RED}✗ Geen key ingevoerd. Probeer opnieuw.${NC}"
+        echo -e "${YELLOW}Tip: Plak je API key en druk Enter${NC}"
         continue
     fi
 
