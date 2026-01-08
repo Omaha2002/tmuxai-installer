@@ -1,0 +1,91 @@
+# -----------------------------------------------------------------------------
+# SAFETY CONFIGURATION
+# Use 'whitelist_patterns' to match the internal key seen in /config
+# -----------------------------------------------------------------------------
+
+whitelist_patterns:
+# Navigation & File Listing
+  - "^ls($| .*)"             # List files
+  - "^ll($| .*)"
+  - "^pwd$"                  # Print working directory
+  - "^cd($| .*)"             # Change directory (safe navigation)
+  - "^cat($| .*)"            # Read file content
+  - "^find .* -type f.*"     # Find files (read-only check)
+
+  # System Status & Info
+  - "^date$"                 # Check date
+  - "^whoami$"               # Check user
+  - "^uptime$"               # Check system uptime
+  - "^free($| .*)"           # Check memory
+  - "^df($| .*)"             # Check disk space
+  - "^du($| .*)"             # Check disk usage
+  - "^top($| .*)"            # Process monitor (interactive but safe to start)
+  - "^htop($| .*)"           # Process monitor
+
+  # Git (Read-only operations)
+  - "^git status.*"
+  - "^git log.*"
+  - "^git diff.*"
+  - "^git show.*"
+  - "^git branch$"
+  - "^git remote -v"
+
+  # Networking (Info only)
+  - "^ping -c [0-9]+ .*"     # Ping (safe if count is limited)
+  - "^curl -I .*"            # Curl headers only
+  - "^ip addr.*"             # Check IP addresses
+  - "^ifconfig.*"
+
+  # Text Processing (Safe filters)
+  - "^grep .*"
+  - "^echo .*"
+blacklist_patterns:
+  # Destructive File Operations
+  - "^rm .*"                 # Remove files
+  - "^rm -rf .*"             # Force recursive remove (DANGER)
+  - "^dd .*"                 # Disk dump (can wipe drives)
+  - "^mkfs.*"                # Format filesystem
+  - "^shred .*"              # Secure delete
+
+  # Permissions & Ownership
+  - "^chmod .*"              # Change mode
+  - "^chown .*"              # Change owner
+
+  # System State
+  - "^shutdown.*"
+  - "^reboot.*"
+  - "^init [0-6]"
+  - "^kill .*"               # Killing processes
+  - "^killall .*"
+  # Dangerous Redirection
+  - ".*> /dev/sd.*"          # Writing directly to a raw device
+  - ":(){ :|:& };:"          # Fork bomb pattern
+
+# -----------------------------------------------------------------------------
+# MODEL CONFIGURATION
+# -----------------------------------------------------------------------------
+models:
+  primary:
+    provider: openrouter
+    base_url: "https://api.mistral.ai/v1"
+    api_key: "GMkftRfD4xFCQ9mcLOSvesaDXdmCRB55"
+    model: "devstral-latest"
+# -----------------------------------------------------------------------------
+# GLOBAL SETTINGS
+# -----------------------------------------------------------------------------
+debug: false
+exec_confirm: true
+
+# -----------------------------------------------------------------------------
+# PROMPT SETTINGS
+# -----------------------------------------------------------------------------
+
+prompts:
+    # Your current strict rule for running commands
+    base_system: >
+      You are an intelligent terminal assistant.  <-- CORRECT (Indented)
+      1. If the user asks for a specific action, output ONLY the shell command.
+      2. If the user asks for an explanation or analysis, you may answer in text, but EVERY line of text must start with a `#` character (so it is valid shell syntax).
+      3. Do not use markdown formatting like **bold** or `code blocks`.
+    chat_assistant: "You are a technical terminal expert. When asked for explanations, be concise and direct. Do not use conversational filler like 'Hi' or 'Sure'. specificy tools or flags clearly."
+    chat_assistant_prepared: "You are an intelligent CLI assistant. The user prompt contains context: 'user@host:cwd[exit_code]'. Use this to detect errors. If the last exit code was non-zero, prioritize debugging."

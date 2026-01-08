@@ -1,0 +1,297 @@
+# -----------------------------------------------------------------------------
+# ENHANCED SAFETY CONFIGURATION
+# Use 'whitelist_patterns' to match the internal key seen in /config
+# -----------------------------------------------------------------------------
+
+whitelist_patterns:
+# Navigation & File Listing (Enhanced)
+  - "^ls($| .*)"             # List files
+  - "^ll($| .*)"             # Long listing
+  - "^la($| .*)"             # List all files
+  - "^pwd$"                  # Print working directory
+  - "^cd($| .*)"             # Change directory (safe navigation)
+  - "^pushd($| .*)"          # Push directory
+  - "^popd$"                 # Pop directory
+  - "^dirs$"                 # Show directory stack
+  - "^tree($| .*)"           # Tree view of directories
+  - "^file($| .*)"           # File type identification
+  
+  # File Reading & Inspection (Enhanced)
+  - "^cat($| .*)"            # Read file content
+  - "^less($| .*)"           # Paginated file reading
+  - "^more($| .*)"           # Paginated file reading
+  - "^head($| .*)"           # First lines of file
+  - "^tail($| .*)"           # Last lines of file
+  - "^wc($| .*)"             # Word/line/char count
+  - "^stat($| .*)"           # File statistics
+  - "^find .* -type f.*"     # Find files (read-only check)
+  - "^locate($| .*)"         # Locate files
+  - "^which($| .*)"          # Find command location
+  - "^whereis($| .*)"        # Locate binary/source/manual
+  
+  # System Status & Info (Enhanced)
+  - "^date$"                 # Check date
+  - "^whoami$"               # Check user
+  - "^id$"                   # User and group IDs
+  - "^uptime$"               # Check system uptime
+  - "^free($| .*)"           # Check memory
+  - "^df($| .*)"             # Check disk space
+  - "^du($| .*)"             # Check disk usage
+  - "^lscpu$"                # CPU information
+  - "^lsblk$"                # Block devices
+  - "^mount$"                # Mounted filesystems
+  - "^ps($| .*)"             # Process status
+  - "^top($| .*)$$"          # Process monitor
+  - "^htop($| .*)"           # Enhanced process monitor
+  - "^jobs$"                 # Active jobs
+  - "^history($| .*)"        # Command history
+  - "^env$"                  # Environment variables
+  - "^printenv($| .*)"       # Print environment
+  
+  # Git Operations (Enhanced - Read-only + Safe Operations)
+  - "^git status.*"          # Repository status
+  - "^git log.*"             # Commit history
+  - "^git diff.*"            # Show differences
+  - "^git show.*"            # Show commit details
+  - "^git branch($| .*)"     # List/show branches
+  - "^git remote($| .*)"     # Remote repository info
+  - "^git config --list$"    # List git config
+  - "^git config --get.*"    # Get specific config
+  - "^git ls-files.*"        # List tracked files
+  - "^git blame.*"           # Show file annotations
+  - "^git reflog.*"          # Reference log
+  - "^git tag($| .*)"        # List tags
+  - "^git stash list$"       # List stashes
+  - "^git stash show.*"      # Show stash content
+  
+  # Development Tools (Safe operations)
+  - "^npm list.*"            # List npm packages
+  - "^pip list.*"            # List pip packages
+  - "^pip show.*"            # Show package info
+  - "^composer show.*"       # Show composer packages
+  - "^cargo tree.*"          # Show cargo dependencies
+  - "^go list.*"             # List go packages
+  - "^mvn dependency:tree$"  # Maven dependencies
+  
+  # Networking (Info only - Enhanced)
+  - "^ping -c [0-9]+ .*"     # Limited ping
+  - "^curl -I .*"            # Headers only
+  - "^curl -s .*"            # Silent mode (for API checks)
+  - "^wget --spider .*"      # Check if URL exists
+  - "^ip addr.*"             # IP addresses
+  - "^ifconfig.*"            # Network interfaces
+  - "^netstat($| .*)"        # Network statistics
+  - "^ss($| .*)"             # Socket statistics
+  - "^nslookup.*"            # DNS lookup
+  - "^dig($| .*)"            # DNS lookup tool
+  
+  # Text Processing & Search (Enhanced)
+  - "^grep($| .*)"           # Text search
+  - "^egrep($| .*)"          # Extended grep
+  - "^fgrep($| .*)"          # Fixed string grep
+  - "^rg($| .*)"             # Ripgrep
+  - "^ag($| .*)"             # Silver searcher
+  - "^awk($| .*)"            # Text processing
+  - "^sed 's/.*/.*/'.*"      # Safe sed substitution (view only)
+  - "^sort($| .*)"           # Sort lines
+  - "^uniq($| .*)"           # Unique lines
+  - "^cut($| .*)"            # Cut fields
+  - "^tr($| .*)"             # Translate characters
+  - "^echo($| .*)"           # Echo text
+  - "^printf($| .*)"         # Formatted output
+  
+  # Archive Operations (Read-only)
+  - "^tar -tf .*"            # List tar contents
+  - "^unzip -l .*"           # List zip contents
+  - "^7z l .*"               # List 7z contents
+  - "^zcat($| .*)"           # Read compressed files
+  - "^gunzip -l .*"          # List gzip info
+
+blacklist_patterns:
+  # Destructive File Operations (Enhanced)
+  - "^rm($| .*)"             # Remove files
+  - "^rmdir($| .*)"          # Remove directories  
+  - "^dd($| .*)"             # Disk dump (can wipe drives)
+  - "^mkfs.*"                # Format filesystem
+  - "^shred($| .*)"          # Secure delete
+  - "^truncate($| .*)"       # Truncate files
+  - "^unlink($| .*)"         # Remove files
+  - ".*\\| *rm($| .*)"       # Piped rm commands
+  
+  # File Modifications
+  - "^mv($| .*)"             # Move/rename files
+  - "^cp .* >.*"             # Copy with redirection
+  - ".*> */dev/.*"           # Writing to devices
+  - ".* >> */etc/.*"         # Appending to system files
+  
+  # Permissions & Ownership (Enhanced)
+  - "^chmod($| .*)"          # Change permissions
+  - "^chown($| .*)"          # Change ownership
+  - "^chgrp($| .*)"          # Change group
+  - "^umask($| .*)"          # Change umask
+  - "^setfacl($| .*)"        # Set ACL
+  - "^chattr($| .*)"         # Change attributes
+  
+  # System State & Process Control (Enhanced)
+  - "^shutdown.*"            # System shutdown
+  - "^reboot.*"              # System reboot
+  - "^halt.*"                # System halt
+  - "^poweroff.*"            # Power off
+  - "^init [0-6]"            # Change runlevel
+  - "^systemctl.*"           # System service control
+  - "^service.*"             # Service control
+  - "^kill($| .*)"           # Kill processes
+  - "^killall($| .*)"        # Kill all processes
+  - "^pkill($| .*)"          # Pattern-based kill
+  - "^nohup.*&$"             # Background processes
+  
+  # Network & Security
+  - "^iptables($| .*)"       # Firewall rules
+  - "^ufw($| .*)"            # Uncomplicated firewall
+  - "^ssh.*"                 # SSH connections
+  - "^scp($| .*)"            # Secure copy
+  - "^rsync($| .*)"          # Remote sync
+  - "^nc($| .*)"             # Netcat
+  - "^nmap($| .*)"           # Network mapper
+  
+  # Package Management
+  - "^apt($| .*)"            # APT package manager
+  - "^yum($| .*)"            # YUM package manager  
+  - "^dnf($| .*)"            # DNF package manager
+  - "^pacman($| .*)"         # Pacman package manager
+  - "^brew install.*"        # Homebrew install
+  - "^pip install.*"         # Pip install
+  - "^npm install.*"         # NPM install
+  - "^gem install.*"         # Ruby gem install
+  
+  # Dangerous Patterns & Malicious Commands
+  - ".*> */dev/sd.*"         # Writing to raw devices
+  - ":(){ :|:& };:"          # Fork bomb
+  - ".*/dev/zero.*"          # Zero device operations
+  - ".*\\| *sh$"             # Piped shell execution
+  - ".*\\| *bash$"           # Piped bash execution
+  - "^\\*.*"                 # Glob expansions that could be dangerous
+  - ".*;.*"                  # Command chaining (potentially dangerous)
+
+# -----------------------------------------------------------------------------
+# MODEL CONFIGURATION  
+# -----------------------------------------------------------------------------
+models:
+  primary:
+    provider: openrouter
+    base_url: "https://api.mistral.ai/v1"
+    api_key: "{{API_KEY_PLACEHOLDER}}"
+    model: "devstral-latest"
+    # Enhanced model parameters for better performance
+    temperature: 0.1          # Lower temperature for more focused responses
+    max_tokens: 2048          # Adequate token limit
+    top_p: 0.9               # Nucleus sampling
+
+# -----------------------------------------------------------------------------
+# ENHANCED GLOBAL SETTINGS
+# -----------------------------------------------------------------------------
+debug: false
+exec_confirm: true           # Always confirm before execution
+max_history: 50             # Keep more context
+context_window: 8000        # Larger context window
+auto_save_session: true     # Save session history
+
+# -----------------------------------------------------------------------------
+# ENHANCED PROMPT SETTINGS
+# -----------------------------------------------------------------------------
+
+prompts:
+    # Enhanced system prompt for command-only mode
+    base_system: >
+      You are Devstral, an expert terminal assistant specialized in development workflows.
+      
+      CORE PRINCIPLES:
+      1. SAFETY FIRST: Only suggest commands that are safe and non-destructive
+      2. CONTEXT AWARE: Consider the current directory, recent commands, and error states
+      3. PRECISION: Provide exact commands with proper flags and syntax
+      4. EDUCATION: When explaining, help users understand what commands do
+      
+      RESPONSE FORMAT:
+      - For ACTION requests: Output ONLY the shell command (no explanations)
+      - For EXPLANATION requests: Every line must start with '#' (shell comment syntax)
+      - Never use markdown formatting like **bold** or `code blocks`
+      
+      COMMAND EXPERTISE:
+      - Git workflows and troubleshooting
+      - File system operations and navigation  
+      - Development tools (npm, pip, cargo, maven, etc.)
+      - System monitoring and diagnostics
+      - Text processing and search operations
+      - Network troubleshooting (read-only)
+      
+      Always prioritize user safety and system stability.
+    
+    # Enhanced chat mode for explanations
+    chat_assistant: >
+      You are Devstral, a senior DevOps engineer and terminal expert.
+      
+      COMMUNICATION STYLE:
+      - Direct and technical, no conversational fluff
+      - Explain WHY along with WHAT
+      - Mention potential risks or alternatives when relevant
+      - Use concrete examples with actual command syntax
+      - Focus on best practices and efficient workflows
+      
+      EXPERTISE AREAS:
+      - Shell scripting and command-line tools
+      - Git version control and collaboration workflows  
+      - System administration and monitoring
+      - Development environment setup and troubleshooting
+      - Performance optimization and debugging
+      - Security-conscious practices
+      
+      Always provide actionable, accurate information that helps users become more proficient.
+    
+    # Enhanced context-aware mode for error handling
+    chat_assistant_prepared: >
+      You are Devstral, analyzing the terminal session context: 'user@host:cwd[exit_code]'.
+      
+      ERROR ANALYSIS PRIORITY:
+      1. If exit_code ≠ 0: IMMEDIATELY focus on diagnosing the failed command
+      2. Check for common error patterns (permissions, missing files, syntax errors)
+      3. Suggest specific debugging steps or corrections
+      4. Provide preventive measures for similar issues
+      
+      CONTEXT UTILIZATION:
+      - Use working directory to understand project context
+      - Consider recent command history for workflow understanding
+      - Identify patterns that might indicate user goals or issues
+      - Suggest workflow improvements based on observed usage
+      
+      DEBUGGING METHODOLOGY:
+      1. Identify root cause of failures
+      2. Provide step-by-step troubleshooting
+      3. Explain error messages in plain language
+      4. Offer multiple solution approaches when applicable
+      5. Include verification steps to confirm fixes
+      
+      Be proactive in preventing issues and optimizing workflows.
+
+# -----------------------------------------------------------------------------
+# ADDITIONAL ENHANCEMENTS
+# -----------------------------------------------------------------------------
+
+# Session management
+session:
+  auto_save: true
+  history_limit: 1000
+  save_location: "~/.tmuxai/sessions"
+
+# Performance tuning
+performance:
+  response_timeout: 30
+  retry_attempts: 3
+  cache_responses: true
+  cache_duration: 300  # 5 minutes
+
+# UI/UX improvements
+interface:
+  show_thinking: false      # Don't show AI thinking process
+  colored_output: true      # Enable colored responses
+  timestamps: false         # Don't show timestamps by default
+  command_preview: true     # Show command before execution

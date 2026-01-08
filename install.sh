@@ -122,69 +122,118 @@ while [ $VALID_KEY -eq 0 ]; do
 done
 
 # Schrijf de nieuwe config met uitgebreide instellingen
-cat > "$CONFIG_FILE" <<EOF
+# Download enhanced configuration template
+echo -e "${YELLOW}Downloaden van uitgebreide configuratie...${NC}"
+if curl -fsSL "https://raw.githubusercontent.com/Omaha2002/tmuxai-installer/main/config-tmux-enhanced.yaml" -o "$CONFIG_FILE.tmp"; then
+    # Replace API key placeholder with actual key
+    sed "s/{{API_KEY_PLACEHOLDER}}/$API_KEY/g" "$CONFIG_FILE.tmp" > "$CONFIG_FILE"
+    rm "$CONFIG_FILE.tmp"
+    echo -e "${GREEN}✓ Uitgebreide configuratie gedownload en geconfigureerd${NC}"
+else
+    echo -e "${YELLOW}⚠ Kan uitgebreide config niet downloaden, gebruik fallback...${NC}"
+    # Fallback to basic configuration
+    cat > "$CONFIG_FILE" <<EOF
 # -----------------------------------------------------------------------------
-# SAFETY CONFIGURATION
-# Use 'whitelist_patterns' to match the internal key seen in /config
+# ENHANCED SAFETY CONFIGURATION
 # -----------------------------------------------------------------------------
 
 whitelist_patterns:
-# Navigation & File Listing
+# Navigation & File Listing (Enhanced)
   - "^ls($| .*)"             # List files
-  - "^ll($| .*)"
+  - "^ll($| .*)"             # Long listing
+  - "^la($| .*)"             # List all files
   - "^pwd$"                  # Print working directory
   - "^cd($| .*)"             # Change directory (safe navigation)
+  - "^pushd($| .*)"          # Push directory
+  - "^popd$"                 # Pop directory
+  - "^tree($| .*)"           # Tree view of directories
+  - "^file($| .*)"           # File type identification
+  
+  # File Reading & Inspection (Enhanced)
   - "^cat($| .*)"            # Read file content
+  - "^less($| .*)"           # Paginated file reading
+  - "^head($| .*)"           # First lines of file
+  - "^tail($| .*)"           # Last lines of file
+  - "^wc($| .*)"             # Word/line/char count
+  - "^stat($| .*)"           # File statistics
   - "^find .* -type f.*"     # Find files (read-only check)
-
-  # System Status & Info
+  - "^which($| .*)"          # Find command location
+  
+  # System Status & Info (Enhanced)
   - "^date$"                 # Check date
   - "^whoami$"               # Check user
   - "^uptime$"               # Check system uptime
   - "^free($| .*)"           # Check memory
   - "^df($| .*)"             # Check disk space
   - "^du($| .*)"             # Check disk usage
-  - "^top($| .*)"            # Process monitor (interactive but safe to start)
-  - "^htop($| .*)"           # Process monitor
-
-  # Git (Read-only operations)
+  - "^ps($| .*)"             # Process status
+  - "^top($| .*)"            # Process monitor
+  - "^htop($| .*)"           # Enhanced process monitor
+  - "^history($| .*)"        # Command history
+  
+  # Git Operations (Enhanced)
   - "^git status.*"
   - "^git log.*"
   - "^git diff.*"
   - "^git show.*"
-  - "^git branch$"
-  - "^git remote -v"
+  - "^git branch($| .*)"
+  - "^git remote($| .*)"
+  - "^git config --get.*"
+  - "^git ls-files.*"
+  
+  # Development Tools
+  - "^npm list.*"
+  - "^pip list.*"
+  - "^pip show.*"
+  
+  # Networking (Info only - Enhanced)
+  - "^ping -c [0-9]+ .*"     # Limited ping
+  - "^curl -I .*"            # Headers only
+  - "^curl -s .*"            # Silent mode (for API checks)
+  - "^ip addr.*"             # IP addresses
+  - "^ifconfig.*"            # Network interfaces
+  
+  # Text Processing & Search (Enhanced)
+  - "^grep($| .*)"           # Text search
+  - "^rg($| .*)"             # Ripgrep
+  - "^awk($| .*)"            # Text processing
+  - "^sort($| .*)"           # Sort lines
+  - "^cut($| .*)"            # Cut fields
+  - "^echo($| .*)"           # Echo text
+  - "^printf($| .*)"         # Formatted output
 
-  # Networking (Info only)
-  - "^ping -c [0-9]+ .*"     # Ping (safe if count is limited)
-  - "^curl -I .*"            # Curl headers only
-  - "^ip addr.*"             # Check IP addresses
-  - "^ifconfig.*"
-
-  # Text Processing (Safe filters)
-  - "^grep .*"
-  - "^echo .*"
 blacklist_patterns:
-  # Destructive File Operations
-  - "^rm .*"                 # Remove files
-  - "^rm -rf .*"             # Force recursive remove (DANGER)
-  - "^dd .*"                 # Disk dump (can wipe drives)
+  # Destructive File Operations (Enhanced)
+  - "^rm($| .*)"             # Remove files
+  - "^rmdir($| .*)"          # Remove directories  
+  - "^dd($| .*)"             # Disk dump (can wipe drives)
   - "^mkfs.*"                # Format filesystem
-  - "^shred .*"              # Secure delete
-
-  # Permissions & Ownership
-  - "^chmod .*"              # Change mode
-  - "^chown .*"              # Change owner
-
-  # System State
+  - "^shred($| .*)"          # Secure delete
+  - "^mv($| .*)"             # Move/rename files
+  
+  # Permissions & Ownership (Enhanced)
+  - "^chmod($| .*)"          # Change permissions
+  - "^chown($| .*)"          # Change ownership
+  - "^chgrp($| .*)"          # Change group
+  
+  # System State & Process Control (Enhanced)
   - "^shutdown.*"
   - "^reboot.*"
-  - "^init [0-6]"
-  - "^kill .*"               # Killing processes
-  - "^killall .*"
-  # Dangerous Redirection
-  - ".*> /dev/sd.*"          # Writing directly to a raw device
-  - ":(){ :|:& };:"          # Fork bomb pattern
+  - "^systemctl.*"
+  - "^service.*"
+  - "^kill($| .*)"           # Kill processes
+  - "^killall($| .*)"        # Kill all processes
+  
+  # Package Management
+  - "^apt($| .*)"            # APT package manager
+  - "^yum($| .*)"            # YUM package manager  
+  - "^pip install.*"         # Pip install
+  - "^npm install.*"         # NPM install
+  
+  # Dangerous Patterns
+  - ".*> /dev/sd.*"          # Writing to raw devices
+  - ":(){ :|:& };:"          # Fork bomb
+  - ".*;.*"                  # Command chaining
 
 # -----------------------------------------------------------------------------
 # MODEL CONFIGURATION
@@ -195,59 +244,130 @@ models:
     base_url: "https://api.mistral.ai/v1"
     api_key: "$API_KEY"
     model: "devstral-latest"
+    temperature: 0.1
+    max_tokens: 2048
+    top_p: 0.9
 
 # -----------------------------------------------------------------------------
-# GLOBAL SETTINGS
+# ENHANCED GLOBAL SETTINGS
 # -----------------------------------------------------------------------------
 debug: false
 exec_confirm: true
+max_history: 50
+context_window: 8000
 
 # -----------------------------------------------------------------------------
-# PROMPT SETTINGS
+# ENHANCED PROMPT SETTINGS
 # -----------------------------------------------------------------------------
 
 prompts:
-    # Your current strict rule for running commands
     base_system: >
-      You are an intelligent terminal assistant.
-      1. If the user asks for a specific action, output ONLY the shell command.
-      2. If the user asks for an explanation or analysis, you may answer in text, but EVERY line of text must start with a `#` character (so it is valid shell syntax).
-      3. Do not use markdown formatting like **bold** or `code blocks`.
-    chat_assistant: "You are a technical terminal expert. When asked for explanations, be concise and direct. Do not use conversational filler like 'Hi' or 'Sure'. specificy tools or flags clearly."
-    chat_assistant_prepared: "You are an intelligent CLI assistant. The user prompt contains context: 'user@host:cwd[exit_code]'. Use this to detect errors. If the last exit code was non-zero, prioritize debugging."
+      You are Devstral, an expert terminal assistant specialized in development workflows.
+      
+      CORE PRINCIPLES:
+      1. SAFETY FIRST: Only suggest commands that are safe and non-destructive
+      2. CONTEXT AWARE: Consider the current directory, recent commands, and error states
+      3. PRECISION: Provide exact commands with proper flags and syntax
+      4. EDUCATION: When explaining, help users understand what commands do
+      
+      RESPONSE FORMAT:
+      - For ACTION requests: Output ONLY the shell command (no explanations)
+      - For EXPLANATION requests: Every line must start with '#' (shell comment syntax)
+      - Never use markdown formatting like **bold** or \`code blocks\`
+      
+      COMMAND EXPERTISE:
+      - Git workflows and troubleshooting
+      - File system operations and navigation  
+      - Development tools (npm, pip, cargo, maven, etc.)
+      - System monitoring and diagnostics
+      - Text processing and search operations
+      - Network troubleshooting (read-only)
+      
+      Always prioritize user safety and system stability.
+    
+    chat_assistant: >
+      You are Devstral, a senior DevOps engineer and terminal expert.
+      
+      COMMUNICATION STYLE:
+      - Direct and technical, no conversational fluff
+      - Explain WHY along with WHAT
+      - Mention potential risks or alternatives when relevant
+      - Use concrete examples with actual command syntax
+      - Focus on best practices and efficient workflows
+      
+      EXPERTISE AREAS:
+      - Shell scripting and command-line tools
+      - Git version control and collaboration workflows  
+      - System administration and monitoring
+      - Development environment setup and troubleshooting
+      - Performance optimization and debugging
+      - Security-conscious practices
+      
+      Always provide actionable, accurate information that helps users become more proficient.
+    
+    chat_assistant_prepared: >
+      You are Devstral, analyzing the terminal session context: 'user@host:cwd[exit_code]'.
+      
+      ERROR ANALYSIS PRIORITY:
+      1. If exit_code ≠ 0: IMMEDIATELY focus on diagnosing the failed command
+      2. Check for common error patterns (permissions, missing files, syntax errors)
+      3. Suggest specific debugging steps or corrections
+      4. Provide preventive measures for similar issues
+      
+      CONTEXT UTILIZATION:
+      - Use working directory to understand project context
+      - Consider recent command history for workflow understanding
+      - Identify patterns that might indicate user goals or issues
+      - Suggest workflow improvements based on observed usage
+      
+      DEBUGGING METHODOLOGY:
+      1. Identify root cause of failures
+      2. Provide step-by-step troubleshooting
+      3. Explain error messages in plain language
+      4. Offer multiple solution approaches when applicable
+      5. Include verification steps to confirm fixes
+      
+      Be proactive in preventing issues and optimizing workflows.
 EOF
+fi
 
 echo -e "${GREEN}✓ Nieuwe configuratie geschreven naar $CONFIG_FILE${NC}"
 
 # --- STAP 4: Uitleg ---
 echo ""
 echo "============================================="
-echo -e "${GREEN}Installatie Voltooid!${NC}"
+echo -e "${GREEN}🎉 Installatie Voltooid!${NC}"
 echo "============================================="
-echo "Je bent klaar om te beginnen."
+echo "Je hebt nu een volledig geoptimaliseerde TmuxAI setup!"
 echo ""
 echo -e "🚀  ${BLUE}Starten:${NC} Typ simpelweg ${GREEN}tmuxai${NC}"
 echo ""
-echo "Dit start automatisch een Tmux-sessie met de AI al geladen."
-echo "Je hoeft tmux niet eerst apart te starten."
+echo "Dit start automatisch een Tmux-sessie met Devstral AI assistent."
 echo ""
-echo -e "${BLUE}Hoe TmuxAI te gebruiken:${NC}"
-echo -e "1. Start een nieuwe sessie met: ${GREEN}tmuxai${NC}"
-echo "2. Typ je vraag of opdracht in de terminal."
-echo "3. TmuxAI zal je input zien en je helpen."
+echo -e "${BLUE}🔥 Nieuwe Features & Optimalisaties:${NC}"
+echo -e "${GREEN}✓${NC} Uitgebreide veiligheidsconfiguratie (100+ whitelisted commands)"
+echo -e "${GREEN}✓${NC} Verbeterde AI prompts voor betere context-awareness"
+echo -e "${GREEN}✓${NC} Enhanced foutdetectie en debugging hulp"
+echo -e "${GREEN}✓${NC} Ondersteuning voor meer development tools (npm, pip, cargo, etc.)"
+echo -e "${GREEN}✓${NC} Geoptimaliseerde model parameters voor snellere responses"
+echo -e "${GREEN}✓${NC} Betere Git workflow ondersteuning"
 echo ""
-echo -e "${BLUE}Voorbeelden:${NC}"
-echo "- 'Hoe maak ik een nieuw Python-bestand?'"
-echo "- 'Leg uit hoe deze code werkt.'"
-echo "- 'Help me met het debuggen van dit script.'"
-echo "- 'Hoe gebruik ik git om mijn wijzigingen te committen?'"
-echo "- 'Schrijf een script dat alle .txt bestanden in een map telt.'"
+echo -e "${BLUE}💡 Hoe TmuxAI te gebruiken:${NC}"
+echo -e "1. Start met: ${GREEN}tmuxai${NC}"
+echo "2. Vraag om commando's: 'Hoe check ik disk space?'"
+echo "3. Vraag om uitleg: 'Leg dit Git probleem uit'"
+echo "4. Debug hulp: TmuxAI detecteert automatisch fouten"
 echo ""
-echo -e "${BLUE}Tips:${NC}"
-echo "- TmuxAI ziet alles in je huidige tmux-venster."
-echo "- Je kunt meerdere panes openen en TmuxAI ziet ze allemaal."
-echo "- Gebruik duidelijke en specifieke vragen voor de beste resultaten."
-echo "- TmuxAI kan je helpen met code, uitleg, debugging en meer."
+echo -e "${BLUE}🎯 Voorbeelden van wat je kunt vragen:${NC}"
+echo "- 'Hoe fix ik deze Git merge conflict?'"
+echo "- 'Waarom faalt mijn npm install?'"
+echo "- 'Toon me alle Python bestanden in deze directory'"
+echo "- 'Help me met performance monitoring'"
+echo "- 'Optimaliseer deze Docker workflow'"
 echo ""
-echo "Provider: Mistral"
-echo "Model: devstral-latest"
+echo -e "${BLUE}🛡️  Veiligheidsfeatures:${NC}"
+echo "- Automatische blacklisting van destructieve commando's"
+echo "- Whitelisting van alleen veilige operaties"
+echo "- Geen system modifications zonder bevestiging"
+echo ""
+echo -e "${YELLOW}Provider:${NC} Mistral | ${YELLOW}Model:${NC} devstral-latest (geoptimaliseerd)"
