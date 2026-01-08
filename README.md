@@ -4,7 +4,13 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-lightgrey.svg)](#supported-platforms)
 
-A one-click installer that sets up **TmuxAI** with **Mistral's Devstral model** and an **enhanced, security-focused configuration** for intelligent terminal assistance.
+## 🤖 What is TmuxAI?
+
+**TmuxAI** is an AI-powered, non-intrusive terminal assistant that works alongside you in a tmux window. Just like a colleague sitting next to you, TmuxAI observes your screen, understands context from what's visible, and helps accordingly.
+
+🔗 **Learn more at [tmuxai.dev](https://tmuxai.dev/)**
+
+This project provides a one-click installer that sets up **TmuxAI** with **Mistral's Devstral model** and an **enhanced, security-focused configuration** for intelligent terminal assistance.
 
 > **🎉 Latest Release: v2.0.0** - Major enhancements with 100+ safe commands, AI persona "Devstral", and context-aware error detection!
 
