@@ -75,19 +75,25 @@ API_KEY=""
 VALID_KEY=0
 
 while [ $VALID_KEY -eq 0 ]; do
-    printf "Voer je Mistral API Key in (of druk Ctrl-C om te annuleren): "
+    echo "" # Extra newline for clarity
+    echo -e "${BLUE}═══════════════════════════════════════════════════════════════${NC}"
+    echo -e "${BLUE}           MISTRAL API KEY INVOER VEREIST${NC}"
+    echo -e "${BLUE}═══════════════════════════════════════════════════════════════${NC}"
+    printf "Plak je Mistral API Key hier en druk ENTER: "
     
-    # Ensure prompt is displayed and flush output
+    # Force terminal output flush
+    exec 1>&1  # Flush stdout
+    
+    # Ensure prompt is displayed and terminal settings are correct
     if command -v stty >/dev/null 2>&1; then
-        stty echo # Ensure echo is enabled
+        stty echo sane # Ensure echo is enabled and terminal is in sane mode
     fi
     
-    # Cross-platform input handling
-    if [ -n "$BASH_VERSION" ]; then
-        read -r API_KEY
-    else
-        read API_KEY
-    fi
+    # Always read from terminal (fixes piped script input issue)
+    read -r API_KEY </dev/tty
+    
+    # Debug: Show raw input length for troubleshooting
+    echo -e "${YELLOW}[DEBUG] Rauwe invoer ontvangen: ${#API_KEY} karakters${NC}" >&2
 
     # Trim whitespace and check if empty
     API_KEY=$(echo "$API_KEY" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
