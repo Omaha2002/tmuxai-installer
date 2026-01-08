@@ -12,7 +12,7 @@
 
 This project provides a one-click installer that sets up **TmuxAI** with **Mistral's Devstral model** and an **enhanced, security-focused configuration** for intelligent terminal assistance.
 
-> **🎉 Latest Release: v2.0.0** - Major enhancements with 100+ safe commands, AI persona "Devstral", and context-aware error detection!
+> **🎉 Latest Release: v2.1.0** - Enhanced documentation, improved macOS compatibility, and better user experience!
 
 ---
 
@@ -337,7 +337,13 @@ We welcome contributions! Here's how you can help:
 
 ## 🏷️ **Version History**
 
-### v2.0.0 (Latest) - Major Enhancements
+### v2.1.0 (Latest) - Documentation & Stability Improvements
+- 📖 **Enhanced Documentation**: Clear TmuxAI explanation and prominent tmuxai.dev reference
+- 🍎 **macOS Compatibility**: Fixed terminal errors and improved cross-platform support
+- ⚡ **Stability Fixes**: Resolved input handling and API key validation issues
+- 🎨 **User Experience**: Better visual formatting and installation robustness
+
+### v2.0.0 - Major Enhancements
 - ✨ **AI Persona**: Professional "Devstral" DevOps expert
 - 🛡️ **Security**: 100+ whitelisted commands (5x increase)
 - 🧠 **Intelligence**: Context-aware error detection and analysis
@@ -371,7 +377,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🔗 **Links**
 
 - **🏠 Repository**: [github.com/Omaha2002/tmuxai-installer](https://github.com/Omaha2002/tmuxai-installer)
-- **🚀 Latest Release**: [v2.0.0](https://github.com/Omaha2002/tmuxai-installer/releases/tag/v2.0.0)
+- **🚀 Latest Release**: [v2.1.0](https://github.com/Omaha2002/tmuxai-installer/releases/tag/v2.1.0)
 - **🤖 Mistral AI**: [console.mistral.ai](https://console.mistral.ai/)
 - **📚 TmuxAI**: [tmuxai.dev](https://tmuxai.dev/)
 - **🔧 Tmux**: [github.com/tmux/tmux](https://github.com/tmux/tmux)
