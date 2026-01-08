@@ -81,16 +81,23 @@ while [ $VALID_KEY -eq 0 ]; do
     echo -e "${BLUE}═══════════════════════════════════════════════════════════════${NC}"
     printf "Plak je Mistral API Key hier en druk ENTER: "
     
-    # Force terminal output flush
-    exec 1>&1  # Flush stdout
+    # Ensure terminal is accessible for input
+    if [ ! -c /dev/tty ]; then
+        echo -e "${RED}Fout: Geen toegang tot terminal voor invoer.${NC}"
+        echo -e "${YELLOW}Probeer het script lokaal uit te voeren in plaats van via curl | bash${NC}"
+        exit 1
+    fi
     
-    # Ensure prompt is displayed and terminal settings are correct
+    # Configure terminal settings if possible (macOS/Linux compatible)
     if command -v stty >/dev/null 2>&1; then
-        stty echo sane # Ensure echo is enabled and terminal is in sane mode
+        stty echo 2>/dev/null </dev/tty || true
     fi
     
     # Always read from terminal (fixes piped script input issue)
-    read -r API_KEY </dev/tty
+    read -r API_KEY </dev/tty 2>/dev/null || {
+        echo -e "${RED}Fout bij lezen van invoer. Probeer opnieuw.${NC}"
+        API_KEY=""
+    }
     
     # Debug: Show raw input length for troubleshooting
     echo -e "${YELLOW}[DEBUG] Rauwe invoer ontvangen: ${#API_KEY} karakters${NC}" >&2
