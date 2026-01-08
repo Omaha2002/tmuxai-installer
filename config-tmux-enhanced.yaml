@@ -92,6 +92,7 @@ whitelist_patterns:
   - "^rg($| .*)"             # Ripgrep
   - "^ag($| .*)"             # Silver searcher
   - "^awk($| .*)"            # Text processing
+  - "^sed -n($| .*)"         # Safe sed print (read-only line extraction)
   - "^sed 's/.*/.*/'.*"      # Safe sed substitution (view only)
   - "^sort($| .*)"           # Sort lines
   - "^uniq($| .*)"           # Unique lines

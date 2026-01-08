@@ -240,6 +240,7 @@ whitelist_patterns:
   - "^grep($| .*)"           # Text search
   - "^rg($| .*)"             # Ripgrep
   - "^awk($| .*)"            # Text processing
+  - "^sed -n($| .*)"         # Safe sed print (read-only line extraction)
   - "^sort($| .*)"           # Sort lines
   - "^cut($| .*)"            # Cut fields
   - "^echo($| .*)"           # Echo text
