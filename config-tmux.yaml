@@ -46,6 +46,17 @@ whitelist_patterns:
   - "^uniq($| .*)"            # Remove duplicates
   - "^awk .*"                 # Text processing
   - "^sed -n .*"              # Stream editor (read-only with -n flag)
+
+  # Browser Automation (MCP Server - Safe Operations Only)
+  - "^playwright_navigate .*"   # Navigate to websites
+  - "^playwright_snapshot .*"   # Take page snapshots
+  - "^playwright_screenshot .*" # Take screenshots
+  - "^playwright_extract .*"    # Extract page content
+  - "^playwright_search .*"     # Search within pages
+  - "^playwright_scroll .*"     # Scroll page content
+  - "^playwright_wait .*"       # Wait for elements
+  - "^playwright_evaluate .*"   # Evaluate JavaScript (read-only)
+
 blacklist_patterns:
   # Destructive File Operations
   - "^rm .*"                 # Remove files
@@ -67,6 +78,34 @@ blacklist_patterns:
   # Dangerous Redirection
   - ".*> /dev/sd.*"          # Writing directly to a raw device
   - ":(){ :|:& };:"          # Fork bomb pattern
+
+  # Browser Automation - Dangerous Operations
+  - "^playwright_click .*"     # Block direct clicking (potential for harmful actions)
+  - "^playwright_fill .*"      # Block form filling (prevent data submission)
+  - "^playwright_submit .*"    # Block form submission
+  - "^playwright_download .*"  # Block file downloads
+  - "^playwright_upload .*"    # Block file uploads
+  - "^playwright_delete .*"    # Block deletion operations
+  - ".*login.*"               # Block login attempts
+  - ".*password.*"            # Block password-related operations
+
+# -----------------------------------------------------------------------------
+# MCP SERVER CONFIGURATION
+# -----------------------------------------------------------------------------
+mcp_servers:
+  playwright:
+    enabled: true
+    command: "npx"
+    args: [
+      "@playwright/mcp@latest",
+      "--headless",
+      "--allowed-origins", "github.com;stackoverflow.com;docs.docker.com;kubernetes.io;nodejs.org;python.org",
+      "--timeout-navigation", "30000",
+      "--timeout-action", "10000"
+    ]
+    working_directory: "~/.config/tmuxai/mcp/playwright"
+    auto_start: true
+    restart_on_failure: true
 
 # -----------------------------------------------------------------------------
 # MODEL CONFIGURATION
@@ -90,10 +129,12 @@ exec_confirm: true
 prompts:
     # Balanced approach: concise for simple commands, detailed for analysis
     base_system: >
-      You are an intelligent terminal assistant.
+      You are an intelligent terminal assistant with browser automation capabilities.
       1. For simple commands (like 'ls', 'cat file.txt', 'git status', 'head', 'tail', 'grep', 'wc'), output ONLY the shell command with no explanation.
-      2. ONLY provide analysis when the user's original request contains analysis words like 'analyze', 'explain', 'how', 'what does', 'why', 'troubleshoot', 'debug'. Do NOT explain individual commands that are part of an analysis sequence.
-      3. When providing analysis, give ONE comprehensive summary at the end, not explanations for each command. EVERY line of text must start with a `#` character (so it is valid shell syntax).
-      4. Do not use markdown formatting like **bold** or `code blocks`.
-    chat_assistant: "You are a technical terminal expert. Execute commands without explanation unless the user specifically asks for analysis or explanation. When analysis is requested, provide ONE comprehensive summary rather than explaining each individual command."
-    chat_assistant_prepared: "You are an intelligent CLI assistant. The user prompt contains context: 'user@host:cwd[exit_code]'. If exit_code ≠ 0, provide debugging help. Otherwise, execute commands without explanation unless analysis is explicitly requested."
+      2. For research requests (containing 'research', 'browse', 'find online', 'check documentation', 'look up'), use browser automation to gather information from trusted sources like GitHub, Stack Overflow, official documentation.
+      3. ONLY provide analysis when the user's original request contains analysis words like 'analyze', 'explain', 'how', 'what does', 'why', 'troubleshoot', 'debug'. Do NOT explain individual commands that are part of an analysis sequence.
+      4. When providing analysis, give ONE comprehensive summary at the end, not explanations for each command. EVERY line of text must start with a `#` character (so it is valid shell syntax).
+      5. Browser automation should focus on: GitHub repositories, Stack Overflow solutions, official documentation, and troubleshooting guides. Never attempt login or form submission.
+      6. Do not use markdown formatting like **bold** or `code blocks`.
+    chat_assistant: "You are a technical terminal expert with browser automation capabilities. Execute commands without explanation unless the user specifically asks for analysis or explanation. For research requests, use browser automation to gather information from GitHub, documentation sites, and Stack Overflow. When analysis is requested, provide ONE comprehensive summary rather than explaining each individual command."
+    chat_assistant_prepared: "You are an intelligent CLI assistant with web research capabilities. The user prompt contains context: 'user@host:cwd[exit_code]'. If exit_code ≠ 0, provide debugging help by researching solutions online if needed. Otherwise, execute commands without explanation unless analysis is explicitly requested. Use browser automation for documentation lookup and troubleshooting research."

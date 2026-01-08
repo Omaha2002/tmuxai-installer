@@ -49,7 +49,46 @@ else
     echo -e "${GREEN}✓ TmuxAI is al aanwezig.${NC}"
 fi
 
-# --- STAP 3: Configuratie (Met Back-up Functie) ---
+# --- STAP 3: Node.js Controleren/Installeren (Voor Browser Automation) ---
+echo -e "${BLUE}Controleren Node.js voor browser automatisering...${NC}"
+if ! command -v node &> /dev/null; then
+    echo "Node.js niet gevonden. Bezig met installeren..."
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        if command -v apt-get &> /dev/null; then
+            # Install Node.js via NodeSource repository (more recent version)
+            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+        elif command -v yum &> /dev/null; then
+            # Install Node.js via NodeSource repository for RHEL/CentOS
+            curl -fsSL https://rpm.nodesource.com/setup_lts.x | sudo bash -
+            sudo yum install -y nodejs
+        else
+            echo "Geen ondersteunde package manager gevonden. Installeer Node.js handmatig."
+            echo "Bezoek: https://nodejs.org/en/download/"
+            exit 1
+        fi
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        if command -v brew &> /dev/null; then
+            brew install node
+        else
+            echo "Homebrew niet gevonden. Installeer Node.js handmatig."
+            echo "Bezoek: https://nodejs.org/en/download/"
+            exit 1
+        fi
+    fi
+    echo -e "${GREEN}✓ Node.js installatie voltooid.${NC}"
+else
+    NODE_VERSION=$(node --version 2>/dev/null || echo "unknown")
+    echo -e "${GREEN}✓ Node.js is al aanwezig (versie: $NODE_VERSION).${NC}"
+fi
+
+# Verify npm is available
+if ! command -v npm &> /dev/null; then
+    echo -e "${RED}✗ npm niet gevonden. Node.js installatie mogelijk gefaald.${NC}"
+    exit 1
+fi
+
+# --- STAP 4: Configuratie (Met Back-up Functie) ---
 CONFIG_DIR="$HOME/.config/tmuxai"
 CONFIG_FILE="$CONFIG_DIR/config.yaml"
 
@@ -163,6 +202,64 @@ while [ $VALID_KEY -eq 0 ]; do
         API_KEY=""
     fi
 done
+
+# --- STAP 5: Playwright MCP Server Installatie ---
+echo ""
+echo -e "${BLUE}Installeren van Playwright MCP Server voor browser automatisering...${NC}"
+
+# Create MCP directory structure
+MCP_DIR="$CONFIG_DIR/mcp"
+PLAYWRIGHT_DIR="$MCP_DIR/playwright"
+mkdir -p "$PLAYWRIGHT_DIR"
+
+# Navigate to the MCP directory and install Playwright
+cd "$PLAYWRIGHT_DIR"
+
+echo -e "${YELLOW}Initialiseren van Playwright MCP omgeving...${NC}"
+# Initialize package.json
+cat > package.json <<EOF
+{
+  "name": "tmuxai-playwright-mcp",
+  "version": "1.0.0",
+  "description": "Playwright MCP Server for TmuxAI",
+  "main": "index.js",
+  "dependencies": {
+    "@playwright/mcp": "latest"
+  },
+  "scripts": {
+    "start": "npx @playwright/mcp@latest"
+  }
+}
+EOF
+
+# Install Playwright MCP server
+echo -e "${YELLOW}Downloaden van Playwright MCP Server...${NC}"
+npm install @playwright/mcp@latest --silent
+
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ Playwright MCP Server succesvol geïnstalleerd${NC}"
+else
+    echo -e "${RED}✗ Playwright MCP Server installatie gefaald${NC}"
+    echo -e "${YELLOW}Browser automatisering zal niet beschikbaar zijn.${NC}"
+    echo -e "${YELLOW}TmuxAI blijft werken voor terminal commando's.${NC}"
+fi
+
+# Test MCP server availability
+echo -e "${YELLOW}Testen van Playwright MCP Server...${NC}"
+if npx @playwright/mcp@latest --help >/dev/null 2>&1; then
+    echo -e "${GREEN}✓ Playwright MCP Server is gereed${NC}"
+    
+    # Install browser binaries in the background
+    echo -e "${YELLOW}Installeren van browser bestanden (op de achtergrond)...${NC}"
+    npx playwright install chromium --quiet &
+    BROWSER_INSTALL_PID=$!
+    echo "Browser installatie gestart (PID: $BROWSER_INSTALL_PID)"
+else
+    echo -e "${YELLOW}⚠ Playwright MCP Server test gefaald - browser automatisering mogelijk beperkt${NC}"
+fi
+
+# Return to original directory
+cd - >/dev/null
 
 # Schrijf de nieuwe config met uitgebreide instellingen
 # Download enhanced configuration template
@@ -390,8 +487,10 @@ echo "Dit start automatisch een Tmux-sessie met Devstral AI assistent."
 echo ""
 echo -e "${BLUE}🔥 Nieuwe Features & Optimalisaties:${NC}"
 echo -e "${GREEN}✓${NC} Uitgebreide veiligheidsconfiguratie (100+ whitelisted commands)"
+echo -e "${GREEN}✓${NC} 🌐 Browser automatisering met Playwright MCP Server"
+echo -e "${GREEN}✓${NC} 🔍 Intelligente web research (GitHub, Stack Overflow, documentatie)"
 echo -e "${GREEN}✓${NC} Verbeterde AI prompts voor betere context-awareness"
-echo -e "${GREEN}✓${NC} Enhanced foutdetectie en debugging hulp"
+echo -e "${GREEN}✓${NC} Enhanced foutdetectie en debugging hulp met online research"
 echo -e "${GREEN}✓${NC} Ondersteuning voor meer development tools (npm, pip, cargo, etc.)"
 echo -e "${GREEN}✓${NC} Geoptimaliseerde model parameters voor snellere responses"
 echo -e "${GREEN}✓${NC} Betere Git workflow ondersteuning"
@@ -410,6 +509,10 @@ echo "4. Debug hulp: TmuxAI detecteert automatisch fouten"
 echo ""
 echo -e "${BLUE}🎯 Voorbeelden van wat je kunt vragen:${NC}"
 echo "- 'Hoe fix ik deze Git merge conflict?'"
+echo "- 'Research Docker best practices on GitHub'"
+echo "- 'Find Kubernetes troubleshooting guides online'"
+echo "- 'Look up this error message on Stack Overflow'"
+echo "- 'Browse Node.js documentation for this API'"
 echo "- 'Waarom faalt mijn npm install?'"
 echo "- 'Toon me alle Python bestanden in deze directory'"
 echo "- 'Help me met performance monitoring'"
