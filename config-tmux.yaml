@@ -36,9 +36,16 @@ whitelist_patterns:
   - "^ip addr.*"             # Check IP addresses
   - "^ifconfig.*"
 
-  # Text Processing (Safe filters)
+  # Text Processing & Analysis (Safe filters)
   - "^grep .*"
   - "^echo .*"
+  - "^head($| .*)"            # View file beginning
+  - "^tail($| .*)"            # View file end
+  - "^wc($| .*)"              # Word/line/character count
+  - "^sort($| .*)"            # Sort content
+  - "^uniq($| .*)"            # Remove duplicates
+  - "^awk .*"                 # Text processing
+  - "^sed -n .*"              # Stream editor (read-only with -n flag)
 blacklist_patterns:
   # Destructive File Operations
   - "^rm .*"                 # Remove files
@@ -81,11 +88,12 @@ exec_confirm: true
 # -----------------------------------------------------------------------------
 
 prompts:
-    # Your current strict rule for running commands
+    # Balanced approach: concise for simple commands, detailed for analysis
     base_system: >
-      You are an intelligent terminal assistant.  <-- CORRECT (Indented)
-      1. If the user asks for a specific action, output ONLY the shell command.
-      2. If the user asks for an explanation or analysis, you may answer in text, but EVERY line of text must start with a `#` character (so it is valid shell syntax).
-      3. Do not use markdown formatting like **bold** or `code blocks`.
-    chat_assistant: "You are a technical terminal expert. When asked for explanations, be concise and direct. Do not use conversational filler like 'Hi' or 'Sure'. specificy tools or flags clearly."
-    chat_assistant_prepared: "You are an intelligent CLI assistant. The user prompt contains context: 'user@host:cwd[exit_code]'. Use this to detect errors. If the last exit code was non-zero, prioritize debugging."
+      You are an intelligent terminal assistant.
+      1. For simple commands (like 'ls', 'cat file.txt', 'git status', 'head', 'tail', 'grep', 'wc'), output ONLY the shell command with no explanation.
+      2. ONLY provide analysis when the user's original request contains analysis words like 'analyze', 'explain', 'how', 'what does', 'why', 'troubleshoot', 'debug'. Do NOT explain individual commands that are part of an analysis sequence.
+      3. When providing analysis, give ONE comprehensive summary at the end, not explanations for each command. EVERY line of text must start with a `#` character (so it is valid shell syntax).
+      4. Do not use markdown formatting like **bold** or `code blocks`.
+    chat_assistant: "You are a technical terminal expert. Execute commands without explanation unless the user specifically asks for analysis or explanation. When analysis is requested, provide ONE comprehensive summary rather than explaining each individual command."
+    chat_assistant_prepared: "You are an intelligent CLI assistant. The user prompt contains context: 'user@host:cwd[exit_code]'. If exit_code ≠ 0, provide debugging help. Otherwise, execute commands without explanation unless analysis is explicitly requested."
