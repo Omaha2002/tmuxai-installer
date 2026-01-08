@@ -113,10 +113,40 @@ while [ $VALID_KEY -eq 0 ]; do
     if [ "$RESPONSE" -eq 200 ]; then
         echo -e "${GREEN}✓ API key is geldig en werkt.${NC}"
         VALID_KEY=1
+    elif [ "$RESPONSE" -eq 401 ]; then
+        echo -e "${RED}✗ API key geweigerd (HTTP 401 Unauthorized)${NC}"
+        echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${YELLOW}⚠️  MOGELIJKE OORZAKEN:${NC}"
+        echo -e "   1. ${BLUE}Betaling niet geactiveerd${NC} - Mistral vereist actieve betaling"
+        echo -e "   2. ${BLUE}API key verlopen${NC} - Maak een nieuwe key aan"
+        echo -e "   3. ${BLUE}Verkeerde key${NC} - Controleer of je de juiste key hebt gekopieerd"
+        echo ""
+        echo -e "${YELLOW}🔧 OPLOSSING STAPPEN:${NC}"
+        echo -e "   ${GREEN}A.${NC} Ga naar: ${BLUE}https://console.mistral.ai${NC}"
+        echo -e "   ${GREEN}B.${NC} Log in en ga naar: ${BLUE}Organization > Billing${NC}"
+        echo -e "   ${GREEN}C.${NC} Voeg betaalinformatie toe en activeer betalingen"
+        echo -e "   ${GREEN}D.${NC} Wacht enkele minuten en probeer opnieuw"
+        echo ""
+        echo -e "${YELLOW}💡 OF OVERSLAAN VOOR TESTEN:${NC}"
+        echo -e "   ${GREEN}E.${NC} Type '${BLUE}skip${NC}' om door te gaan zonder validatie"
+        echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo ""
     else
-        echo -e "${RED}✗ API key is ongeldig of werkt niet. HTTP Status: $RESPONSE${NC}"
-        echo -e "${YELLOW}Druk Ctrl-C om het script te stoppen, of probeer een andere key.${NC}"
-        # Reset API_KEY so we ask again
+        echo -e "${RED}✗ API key validatie gefaald. HTTP Status: $RESPONSE${NC}"
+        echo -e "${YELLOW}Controleer je internetverbinding en API key.${NC}"
+    fi
+    
+    # Check if user wants to skip validation
+    if [ "$API_KEY" = "skip" ]; then
+        echo -e "${YELLOW}⚠️  Validatie overgeslagen - configuratie wordt aangemaakt met ongevalideerde key${NC}"
+        echo -e "${YELLOW}   Je kunt de API key later aanpassen in: ~/.config/tmuxai/config.yaml${NC}"
+        VALID_KEY=1
+        API_KEY="YOUR_API_KEY_HERE"  # Placeholder for manual replacement
+    fi
+    
+    # If still invalid, reset and continue loop
+    if [ $VALID_KEY -eq 0 ]; then
+        echo -e "${YELLOW}Probeer opnieuw of type 'skip' om door te gaan...${NC}"
         API_KEY=""
     fi
 done
@@ -351,6 +381,12 @@ echo -e "${GREEN}✓${NC} Enhanced foutdetectie en debugging hulp"
 echo -e "${GREEN}✓${NC} Ondersteuning voor meer development tools (npm, pip, cargo, etc.)"
 echo -e "${GREEN}✓${NC} Geoptimaliseerde model parameters voor snellere responses"
 echo -e "${GREEN}✓${NC} Betere Git workflow ondersteuning"
+echo ""
+echo -e "${YELLOW}⚠️  BELANGRIJK - MISTRAL API GEBRUIK:${NC}"
+echo -e "${YELLOW}   Als je '401 Unauthorized' errors krijgt tijdens gebruik:${NC}"
+echo -e "   1. Ga naar: ${BLUE}https://console.mistral.ai${NC}"
+echo -e "   2. Activeer betalingen in ${BLUE}Organization > Billing${NC}"
+echo -e "   3. Mistral vereist actieve betaling voor API gebruik"
 echo ""
 echo -e "${BLUE}💡 Hoe TmuxAI te gebruiken:${NC}"
 echo -e "1. Start met: ${GREEN}tmuxai${NC}"

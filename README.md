@@ -56,9 +56,13 @@ That's it! The installer will:
 ### Step 1: Get Your Mistral API Key
 1. Visit [Mistral AI Console](https://console.mistral.ai/)
 2. Sign up or log in to your account
-3. Navigate to API Keys section
-4. Create a new API key
-5. **Copy the key** - you'll need it during installation
+3. **⚠️ CRITICAL**: Navigate to `Organization > Billing` and **activate payments**
+   - Mistral requires active payment information to enable API keys
+   - You can choose the "Experiment" (free trial) or "Scale" (pay-as-you-go) plan
+   - Wait a few minutes after activation
+4. Navigate to API Keys section
+5. Create a new API key
+6. **Copy the key** - you'll need it during installation
 
 ### Step 2: Run the Installer
 
@@ -233,18 +237,27 @@ The installer will:
 
 ### Common Issues
 
-#### ❌ **"API key is invalid"**
+#### ❌ **"API key is invalid" or "401 Unauthorized"**
 ```bash
-# Solution 1: Double-check your API key
+# Solution 1: ACTIVATE PAYMENTS (Most Common Issue)
+# - Visit https://console.mistral.ai/
+# - Go to Organization > Billing
+# - Add payment information and activate payments
+# - Choose "Experiment" (free trial) or "Scale" (pay-as-you-go)
+# - Wait 5-10 minutes after activation
+
+# Solution 2: Double-check your API key
 # - Visit https://console.mistral.ai/
 # - Copy the key exactly as shown
 # - Avoid extra spaces or characters
 
-# Solution 2: Test API key manually
+# Solution 3: Test API key manually
 curl -H "Authorization: Bearer YOUR_API_KEY" \
      -H "Content-Type: application/json" \
      "https://api.mistral.ai/v1/models"
 ```
+
+> **🚨 Important**: Mistral requires activated payments even for free trial usage. The most common cause of 401 errors is not having activated billing.
 
 #### ❌ **"tmux command not found" after installation**
 ```bash
