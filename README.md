@@ -1,3 +1,5 @@
+NOT PRODUCTION READY!!!
+
 # 🚀 TmuxAI Enhanced Installer
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/Omaha2002/tmuxai-installer)](https://github.com/Omaha2002/tmuxai-installer/releases)
