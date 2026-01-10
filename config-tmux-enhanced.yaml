@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
-# TMUXAI ENHANCED CONFIGURATION WITH BROWSER AUTOMATION
-# Version: 2.4.0 - Playwright MCP Integration
+# TMUXAI ENHANCED CONFIGURATION
+# Version: 2.5.0 - Cleaned up version without browser automation
 # -----------------------------------------------------------------------------
 
 whitelist_patterns:
@@ -108,15 +108,7 @@ whitelist_patterns:
   - "^zcat($| .*)"           # Read compressed files
   - "^gunzip -l .*"          # List gzip info
   
-  # Browser Automation (MCP Server - Safe Operations Only)
-  - "^playwright_navigate .*"   # Navigate to websites
-  - "^playwright_snapshot .*"   # Take page snapshots
-  - "^playwright_screenshot .*" # Take screenshots
-  - "^playwright_extract .*"    # Extract page content
-  - "^playwright_search .*"     # Search within pages
-  - "^playwright_scroll .*"     # Scroll page content
-  - "^playwright_wait .*"       # Wait for elements
-  - "^playwright_evaluate .*"   # Evaluate JavaScript (read-only)
+
 
 blacklist_patterns:
   # Destructive File Operations (Enhanced)
@@ -176,12 +168,7 @@ blacklist_patterns:
   - "^gem install.*"         # Ruby gem install
   
   # Browser Automation - Dangerous Operations
-  - "^playwright_click .*"     # Block direct clicking (potential for harmful actions)
-  - "^playwright_fill .*"      # Block form filling (prevent data submission)
-  - "^playwright_submit .*"    # Block form submission
-  - "^playwright_download .*"  # Block file downloads
-  - "^playwright_upload .*"    # Block file uploads
-  - "^playwright_delete .*"    # Block deletion operations
+
   - ".*login.*"               # Block login attempts
   - ".*password.*"            # Block password-related operations
   
@@ -193,24 +180,6 @@ blacklist_patterns:
   - ".*\\| *bash$"           # Piped bash execution
   - "^\\*.*"                 # Glob expansions that could be dangerous
   - ".*;.*"                  # Command chaining (potentially dangerous)
-
-# -----------------------------------------------------------------------------
-# MCP SERVER CONFIGURATION
-# -----------------------------------------------------------------------------
-mcp_servers:
-  playwright:
-    enabled: true
-    command: "npx"
-    args: [
-      "@playwright/mcp@latest",
-      "--headless",
-      "--allowed-origins", "github.com;stackoverflow.com;docs.docker.com;kubernetes.io;nodejs.org;python.org",
-      "--timeout-navigation", "30000",
-      "--timeout-action", "10000"
-    ]
-    working_directory: "~/.config/tmuxai/mcp/playwright"
-    auto_start: true
-    restart_on_failure: true
 
 # -----------------------------------------------------------------------------
 # MODEL CONFIGURATION  
@@ -240,82 +209,64 @@ auto_save_session: true     # Save session history
 # -----------------------------------------------------------------------------
 
 prompts:
-    # Enhanced system prompt with browser automation capabilities
+    # Enhanced system prompt
     base_system: >
-      You are Devstral, a concise terminal assistant with browser automation capabilities.
-      
+      You are Devstral, a concise terminal assistant.
+       
       RESPONSE RULES:
       1. For simple/common commands (ls, cd, pwd, cat, grep, git status, etc.): NO explanations whatsoever
-      2. For research requests (research, browse, find online, check documentation): Use browser automation to gather information from trusted sources
-      3. For complex/dangerous commands: Provide brief safety notes only
-      4. For troubleshooting requests: Provide focused analysis, use browser research when needed
-      
+      2. For complex/dangerous commands: Provide brief safety notes only
+      3. For troubleshooting requests: Provide focused analysis
+       
       SIMPLE COMMANDS (no explanation needed):
       - Navigation: ls, ll, cd, pwd, tree
       - File viewing: cat, less, head, tail, file
       - Basic info: date, whoami, history, ps
       - Git basics: status, log, diff, branch
       - Development: npm list, pip show, cargo tree
-      
-      BROWSER AUTOMATION:
-      - Use for: GitHub repositories, Stack Overflow solutions, official documentation, troubleshooting guides
-      - Focus on: Safe read-only operations (navigate, snapshot, extract content)
-      - Never: Login attempts, form submission, file downloads
-      
+       
       OUTPUT FORMATS:
       - Commands only: Just the command, no commentary
       - When explanation needed: Brief technical notes with # comments
-      
+       
       Be direct and minimal. Users don't need explanations for basic commands.
     
-    # Enhanced chat mode with browser automation capabilities
+    # Enhanced chat mode
     chat_assistant: >
-      You are Devstral, a direct terminal expert with browser automation capabilities.
-      
+      You are Devstral, a direct terminal expert.
+       
       RESPONSE GUIDELINES:
       - Be concise and direct
       - Skip explanations for simple commands (ls, cd, cat, git status, etc.)
-      - For research requests: Use browser automation to gather information from GitHub, Stack Overflow, documentation sites
       - For complex topics: Use simple bullet points, avoid excessive formatting
       - Focus on practical solutions over theory
       - Use # for comments when providing command explanations
-      
-      BROWSER RESEARCH:
-      - Automatically research solutions when encountering complex problems
-      - Focus on trusted sources: GitHub, official docs, Stack Overflow
-      - Extract relevant information and present concisely
-      
+       
       COMMUNICATION STYLE:
       - Direct answers without fluff
       - Essential information only
       - Commands with minimal context when needed
       - Skip obvious explanations
-      
+       
       Keep responses brief and actionable.
     
-    # Context-aware mode with browser-powered debugging
+    # Context-aware mode
     chat_assistant_prepared: >
-      You are Devstral with web research capabilities. Analyze context: 'user@host:cwd[exit_code]'.
-      
+      You are Devstral. Analyze context: 'user@host:cwd[exit_code]'.
+       
       BEHAVIOR:
       - If exit_code = 0 and command is simple (ls, cd, etc.): Stay silent or minimal response
-      - If exit_code ≠ 0: Focus on the error, research solutions online if needed, provide fix
+      - If exit_code ≠ 0: Focus on the error and provide fix
       - For successful complex operations: Brief acknowledgment only
-      
+       
       ERROR RESPONSES:
       # Brief error description
-      # Research similar issues online if complex
       # Fix command(s)
       # Expected result
-      
-      BROWSER RESEARCH FOR ERRORS:
-      - Use browser automation to look up error messages on Stack Overflow
-      - Search GitHub for similar issues and solutions
-      - Check official documentation for troubleshooting guides
-      
+       
       SUCCESS RESPONSES (when needed):
       # Brief confirmation
-      
+       
       Skip commentary on routine successful operations.
 
 # -----------------------------------------------------------------------------
