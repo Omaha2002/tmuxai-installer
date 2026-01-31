@@ -11,7 +11,7 @@ Learn more at [tmuxai.dev](https://tmuxai.dev)
 
 This project provides a one-click installer that sets up TmuxAI with Mistral's Devstral model and an enhanced, security-focused configuration.
 
-**Latest Release: v2.2.0** - See [CHANGELOG.md](CHANGELOG.md) for details.
+**Latest Release: v2.2.1** - See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ---
 
@@ -321,7 +321,15 @@ We welcome contributions! Here's how you can help:
 
 ## Version History
 
-### v2.1.0 (Latest) - Documentation & Stability Improvements
+### v2.2.1 (Latest) - Robustness & Security Improvements
+- **Debug Mode**: Set `DEBUG=1` for verbose troubleshooting output
+- **Error Recovery**: Automatic rollback to backup if installation fails  
+- **YAML Validation**: Syntax validation after configuration generation
+- **Enhanced Security**: Safe API key handling with special character escaping
+- **Better Package Support**: Added dnf and pacman package managers
+- **Code Quality**: Refactored with helper functions and cleaner organization
+
+### v2.1.0 - Documentation & Stability Improvements  
 - Enhanced Documentation: Clear TmuxAI explanation and prominent tmuxai.dev reference
 - macOS Compatibility: Fixed terminal errors and improved cross-platform support
 - Stability Fixes: Resolved input handling and API key validation issues
@@ -361,7 +369,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Links
 
 - Repository: [github.com/Omaha2002/tmuxai-installer](https://github.com/Omaha2002/tmuxai-installer)
-- Latest Release: [v2.1.0](https://github.com/Omaha2002/tmuxai-installer/releases/tag/v2.1.0)
+- Latest Release: [v2.2.1](https://github.com/Omaha2002/tmuxai-installer/releases/tag/v2.2.1)
 - Mistral AI: [console.mistral.ai](https://console.mistral.ai/)
 - TmuxAI: [tmuxai.dev](https://tmuxai.dev/)
 - Tmux: [github.com/tmux/tmux](https://github.com/tmux/tmux)
