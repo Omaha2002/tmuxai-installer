@@ -1,5 +1,3 @@
-NOT PRODUCTION READY!!!
-
 # TmuxAI Enhanced Installer
 
 [![GitHub release](https://img.shields.io/github/v/release/Omaha2002/tmuxai-installer)](https://github.com/Omaha2002/tmuxai-installer/releases)
@@ -13,7 +11,7 @@ Learn more at [tmuxai.dev](https://tmuxai.dev)
 
 This project provides a one-click installer that sets up TmuxAI with Mistral's Devstral model and an enhanced, security-focused configuration.
 
-Latest Release: v2.1.0
+**Latest Release: v2.2.0** - See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ---
 
